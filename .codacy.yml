@@ -1,0 +1,10 @@
+exclude_paths:
+  - '**/R.class',
+  - '**/R$*.class',
+  - '**/*$ViewInjector*.*',
+  - '**/BuildConfig.*',
+  - '**/Manifest*.*',
+  - '**/*Test*.*',
+  - 'android/**/*.*',
+  - '**/*Fragment.*',
+  - '**/*Activity.*'
