@@ -20,30 +20,36 @@ jobs:
           paths:
             - ~/.gradle
           key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
-      - run:
-          name: Run Tests
-          command: ./gradlew lint test
+#      - run:
+#          name: Run Tests
+#          command: ./gradlew lint test
       - run:
           name: Create coverage report
           command: ./gradlew jacocoCoverageReport
+#      - run:
+#          name: Setup Code Climate test-reporter
+#          command: |
+#            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+#            chmod +x ./cc-test-reporter
+#      - run:
+#          name: CodeClimate Coverage report
+#          command: |
+#            ./cc-test-reporter before-build
+#            ./gradlew lint test
+#            ./gradlew jacocoCoverageReport
+#            cp ~/code/app/build/reports/jacoco/jacocoCoverageReport/jacocoCoverageReport.xml ~/code/app/build/reports/jacoco/jacocoCoverageReport/jacoco.xml
+#            cp ~/code/app/build/reports/jacoco/jacocoCoverageReport/jacocoCoverageReport.xml ~/code/app/build/reports/jacoco/jacoco.xml
+#            cp ~/code/app/build/reports/jacoco/jacocoCoverageReport/jacocoCoverageReport.xml ~/code/app/build/jacoco.xml
+#            cp ~/code/app/build/reports/jacoco/jacocoCoverageReport/jacocoCoverageReport.xml ~/code/app/jacoco.xml
+#            cp ~/code/app/build/reports/jacoco/jacocoCoverageReport/jacocoCoverageReport.xml ~/code/jacoco.xml
+#            cp ~/code/app/build/reports/jacoco/jacocoCoverageReport/jacocoCoverageReport.xml ~/jacoco.xml
+#            ./cc-test-reporter after-build --coverage-input-type jacoco --exit-code $?
       - run:
-          name: Setup Code Climate test-reporter
+          name: Codacy
           command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-            chmod +x ./cc-test-reporter
-      - run:
-          name: CodeClimate Coverage report
-          command: |
-            ./cc-test-reporter before-build
-            ./gradlew lint test
-            ./gradlew jacocoCoverageReport
-            cp ~/code/app/build/reports/jacoco/jacocoCoverageReport/jacocoCoverageReport.xml ~/code/app/build/reports/jacoco/jacocoCoverageReport/jacoco.xml
-            cp ~/code/app/build/reports/jacoco/jacocoCoverageReport/jacocoCoverageReport.xml ~/code/app/build/reports/jacoco/jacoco.xml
-            cp ~/code/app/build/reports/jacoco/jacocoCoverageReport/jacocoCoverageReport.xml ~/code/app/build/jacoco.xml
-            cp ~/code/app/build/reports/jacoco/jacocoCoverageReport/jacocoCoverageReport.xml ~/code/app/jacoco.xml
-            cp ~/code/app/build/reports/jacoco/jacocoCoverageReport/jacocoCoverageReport.xml ~/code/jacoco.xml
-            cp ~/code/app/build/reports/jacoco/jacocoCoverageReport/jacocoCoverageReport.xml ~/jacoco.xml
-            ./cc-test-reporter after-build --coverage-input-type jacoco --exit-code $?
+            export CODACY_PROJECT_TOKEN=bfcd600d677d433caabbe28b0942736e
+            wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)
+            java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r ~/code/app/build/reports/jacoco/jacocoCoverageReport/jacocoCoverageReport.xml
       - store_artifacts:
           path: app/build/reports
           destination: reports
